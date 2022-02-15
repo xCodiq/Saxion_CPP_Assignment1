@@ -10,7 +10,7 @@
 #include <string>
 #include <fstream>
 
-using std::cout, std::cin, std::endl, std::getline, std::ifstream, std::string;
+using std::cout, std::cin, std::endl, std::getline, std::ifstream, std::ofstream, std::string, std::isalpha, std::islower;
 
 /**
  * Prompt the user for a file name which will be used
@@ -55,13 +55,13 @@ string convertInputFileNameToOutputFileName(const string &fileName) {
  * @param letterFrequencyArray the integer array to store the values in
  */
 void readLetterFrequency(const string &fileName, int letterFrequencyArray[26]) {
-    std::ifstream inputStream{fileName};
+    ifstream inputStream{fileName};
 
-    for (std::string fileLine{}; std::getline(inputStream, fileLine);) {
+    for (string fileLine{}; getline(inputStream, fileLine);) {
         for (const char character: fileLine) {
-            if (!std::isalpha(character)) continue;
+            if (!isalpha(character)) continue;
 
-            int index = std::tolower(character) - 'a';
+            int index = tolower(character) - 'a';
             letterFrequencyArray[index]++;
         }
     }
@@ -74,11 +74,11 @@ void readLetterFrequency(const string &fileName, int letterFrequencyArray[26]) {
  * @param letterFrequencyArray the integer array to read it's values from
  */
 void writeLetterFrequencyToOutputFile(const string &fileName, const int letterFrequencyArray[26]) {
-    std::ofstream outputStream{fileName};
+    ofstream outputStream{fileName};
 
     for (int i = 0; i < 26; ++i) {
         int letterFrequency = letterFrequencyArray[i];
-        outputStream << static_cast<char>(i + 'a') << ": " << letterFrequency << endl;
+        outputStream << static_cast<char>(i + 'a') << ": " << letterFrequency << "x" << endl;
     }
 }
 
@@ -90,10 +90,10 @@ void writeLetterFrequencyToOutputFile(const string &fileName, const int letterFr
 void sortLetterFrequencyArray(int letterFrequencyArray[26]) {
     for (int floor = 0; floor < 26; ++floor) {
         for (int ceiling = floor + 1; ceiling < 26; ++ceiling) {
-            int temp = letterFrequencyArray[floor];
+            int temporaryFloor = letterFrequencyArray[floor];
             if (letterFrequencyArray[floor] < letterFrequencyArray[ceiling]) {
                 letterFrequencyArray[floor] = letterFrequencyArray[ceiling];
-                letterFrequencyArray[ceiling] = temp;
+                letterFrequencyArray[ceiling] = temporaryFloor;
             }
         }
     }
@@ -115,7 +115,7 @@ int main() {
     // Declare a new integer array to store all the frequency data in
     int letterFrequencyArray[26]{};
 
-    // Prompt the user for a input file name
+    // Prompt the user for an input file name
     string inputFileName = promptInputFileName();
 
     // Read the text file, and count every single character from the Alphabet
