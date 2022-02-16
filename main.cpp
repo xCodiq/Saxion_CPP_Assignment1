@@ -2,7 +2,7 @@
  * C++ Foundations - SAXION 2022
  *
  * Project: Assignment 1
- * Datum: 14-02-2022
+ * Datum: 16-02-2022
  * Door: Elmar Blume
  */
 
@@ -11,6 +11,18 @@
 #include <fstream>
 
 using std::cout, std::cin, std::endl, std::getline, std::ifstream, std::ofstream, std::string, std::isalpha, std::islower;
+
+/**
+ * The Letter structure represents one letter of the alphabet. It contains a character,
+ * and frequency which will be swapped in sortLetterFrequency
+ */
+struct Letter {
+    // The character of the alphabet
+    char character;
+
+    // The frequency of the character in the text file
+    int frequency = 0;
+};
 
 /**
  * Prompt the user for a file name which will be used
@@ -49,12 +61,13 @@ string convertInputFileNameToOutputFileName(const string &fileName) {
 }
 
 /**
- * Read every line from a file, and put the frequency results in an array
+ * Read every line from a file, and put the frequency
+ * results in an letter structure in the letter array
  *
  * @param fileName the name of the file to open
- * @param letterFrequencyArray the integer array to store the values in
+ * @param letters the letter array to store the letter structures in
  */
-void readLetterFrequency(const string &fileName, int letterFrequencyArray[26]) {
+void readLetters(const string &fileName, Letter letters[26]) {
     ifstream inputStream{fileName};
 
     for (string fileLine{}; getline(inputStream, fileLine);) {
@@ -62,76 +75,85 @@ void readLetterFrequency(const string &fileName, int letterFrequencyArray[26]) {
             if (!isalpha(character)) continue;
 
             int index = tolower(character) - 'a';
-            letterFrequencyArray[index]++;
+            letters[index].character = tolower(character);
+            letters[index].frequency++;
         }
     }
 }
 
 /**
- * Write the letter frequency array to the specified output file
+ * Write the letter array to the specified output file
  *
  * @param fileName the name of the file to write to
- * @param letterFrequencyArray the integer array to read it's values from
+ * @param letters the letter array to read it's frequencies from
  */
-void writeLetterFrequencyToOutputFile(const string &fileName, const int letterFrequencyArray[26]) {
+void writeLettersToOutputFile(const string &fileName, const Letter letters[26]) {
     ofstream outputStream{fileName};
 
     for (int i = 0; i < 26; ++i) {
-        int letterFrequency = letterFrequencyArray[i];
-        outputStream << static_cast<char>(i + 'a') << ": " << letterFrequency << "x" << endl;
+        const Letter letter = letters[i];
+        outputStream << letter.character << ": " << letter.frequency << endl;
     }
 }
 
 /**
- * Sort the letter frequency array using BubbleSort, swapping values
+ * Sort the letter array using BubbleSort, swapping values
  *
- * @param letterFrequencyArray the integer array to sort
+ * @param letters the letter array to sort
  */
-void sortLetterFrequencyArray(int letterFrequencyArray[26]) {
+void sortLetters(Letter letters[26]) {
     for (int floor = 0; floor < 26; ++floor) {
         for (int ceiling = floor + 1; ceiling < 26; ++ceiling) {
-            int temporaryFloor = letterFrequencyArray[floor];
-            if (letterFrequencyArray[floor] < letterFrequencyArray[ceiling]) {
-                letterFrequencyArray[floor] = letterFrequencyArray[ceiling];
-                letterFrequencyArray[ceiling] = temporaryFloor;
+            // Store temporary values of floor to use later
+            int temporaryFloorFrequency = letters[floor].frequency;
+            char temporaryFloorCharacter = letters[floor].character;
+
+            // Check if the ceiling frequency is greater than the floor frequency
+            if (letters[floor].frequency < letters[ceiling].frequency) {
+                letters[floor].frequency = letters[ceiling].frequency;
+                letters[ceiling].frequency = temporaryFloorFrequency;
+
+                letters[floor].character = letters[ceiling].character;
+                letters[ceiling].character = temporaryFloorCharacter;
             }
         }
     }
 }
 
 /**
- * Print the whole letter frequency array with it's character to the console
+ * Print the whole letter array with it's character and frequency to the console
  *
- * @param letterFrequencyArray the integer array to prints it's value from
+ * @param letters the letter array to print it's values from
  */
-void printLetterFrequencyArray(const int letterFrequencyArray[26]) {
+void printLetters(const Letter letters[26]) {
     for (int i = 0; i < 26; i++) {
-        int letterFrequency = letterFrequencyArray[i];
-        if (letterFrequency == 0) continue;
+        Letter letter = letters[i];
+        if (letter.frequency == 0) continue;
 
-        cout << static_cast<char>(i + 'a') << ": " << letterFrequency << "x" << endl;
+        cout << letter.character << ": " << letter.frequency << endl;
     }
 }
 
 int main() {
     // Declare a new integer array to store all the frequency data in
-    int letterFrequencyArray[26]{};
+//    int letterFrequencyArray[26]{};
+    Letter letters[26]{};
 
     // Prompt the user for an input file name
     string inputFileName = promptInputFileName();
 
     // Read the text file, and count every single character from the Alphabet
-    readLetterFrequency(inputFileName, letterFrequencyArray);
+    readLetters(inputFileName, letters);
 
     // Sort the letter frequency array using Bubblesort
-    sortLetterFrequencyArray(letterFrequencyArray);
+    sortLetters(letters);
 
     // Convert the input file name to a fitting output file name, and write the
     // sorted letter frequency array to the output stream
     string outputFileName = convertInputFileNameToOutputFileName(inputFileName);
-    writeLetterFrequencyToOutputFile(outputFileName, letterFrequencyArray);
+    writeLettersToOutputFile(outputFileName, letters);
 
     // Print the whole letter frequency array to the console
-    printLetterFrequencyArray(letterFrequencyArray);
+    printLetters(letters);
     return 0;
 }
