@@ -107,7 +107,9 @@ void sortLetterFrequencyArray(int letterFrequencyArray[26]) {
 void printLetterFrequencyArray(const int letterFrequencyArray[26]) {
     for (int i = 0; i < 26; i++) {
         int letterFrequency = letterFrequencyArray[i];
-        cout << static_cast<char>(i + 'a') << ": " << letterFrequency << endl;
+        if (letterFrequency == 0) continue;
+
+        cout << static_cast<char>(i + 'a') << ": " << letterFrequency << "x" << endl;
     }
 }
 
